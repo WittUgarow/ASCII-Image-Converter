@@ -12,11 +12,16 @@ def resizeImg(img, scale):
 def greyscaleImg(img):
     return img.convert("L")
 
-def pixelToChar(pixel, invert):
-    multiply = -1 if invert else 1
-    valueScale = 255/len(ASCII) # Find scale for RGB -> index #
-    index = int(pixel/valueScale)-1 #Adjust for starting 0
-    return ASCII[index*multiply] # 70 - index for reversed
+
+def pixelToChar(pixel, invert=False):
+    # Convert the pixel value (0-255) into an ASCII index
+    index = int(pixel * (len(ASCII) - 1) / 255)
+
+    # Reverse the index if inversion is enabled
+    if invert:
+        index = len(ASCII) - 1 - index
+
+    return ASCII[index]
 
 def convertToASCII(img, invert = False):
     width, height = img.size 
@@ -32,11 +37,12 @@ def convertToASCII(img, invert = False):
     return string
 
 
+#===========================ARGParse===========================
 parser = argparse.ArgumentParser()
 
 parser.add_argument("file", help="The image you want to convert")
 parser.add_argument("scale", type=float, help="The scale of the ASCII image")
-parser.add_argument("-i", "--invert", type=bool, help="Invert the image color")
+parser.add_argument("-i", "--invert", action="store_true", help="Invert the image color")
 
 args = parser.parse_args()
 
@@ -45,6 +51,20 @@ smallImg = resizeImg(img, args.scale)
 
 greyImg = greyscaleImg(smallImg)
 text = convertToASCII(greyImg)
-invert = convertToASCII(greyImg, invert=args.invert)
-print("")
-print(invert)
+final = convertToASCII(greyImg, invert=args.invert)
+#==============================================================
+
+# #===========================Regular===========================
+# file = "file location"
+# scale = 0.5
+# invert = False
+
+# img = Image.open(file)
+# smallImg = resizeImg(img, scale)
+
+# greyImg = greyscaleImg(smallImg)
+# text = convertToASCII(greyImg)
+# final = convertToASCII(greyImg, invert=invert)
+# #=============================================================
+
+print(final)
